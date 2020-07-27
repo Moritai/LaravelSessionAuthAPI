@@ -15,15 +15,17 @@ use Illuminate\Support\Facades\Route;
 */
 
 
-// Route::get('/guest', function () {
-//     return response()->json([
-//         'message' => 'Hello, guest'
-//     ]);
-// });
+Route::get('/guest', function () {
+    return response()->json([
+        'message' => 'Hello, guest'
+    ]);
+});
 
 // prefixはルートのパスに付与するもの（下の例だとauth/twitterがパスとなる）
 Route::prefix('auth')->middleware('guest')->group(function () {
     Route::get('/facebook', 'Auth\FacebookOAuthController@getRedirectUrl');
+    // .envに登録したFACEBOOK_CALLBACK_URL
+    Route::get('facebook/callback', 'Auth\FacebookOAuthController@handleProviderCallback');
 });
 
 
