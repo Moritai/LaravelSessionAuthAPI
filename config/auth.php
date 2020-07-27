@@ -46,6 +46,12 @@ return [
             'provider' => 'users',
             'hash' => false,
         ],
+
+        //追加
+        'facebook' => [
+            'driver' => 'session',
+            'provider' => 'facebook_accounts',
+        ],
     ],
 
     /*
@@ -75,6 +81,12 @@ return [
         //     'driver' => 'database',
         //     'table' => 'users',
         // ],
+        
+        // 追加
+        'facebook_accounts' => [
+            'driver' => 'eloquent',
+            'model' => App\FacebookAccount::class,
+        ],
     ],
 
     /*
