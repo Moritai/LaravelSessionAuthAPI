@@ -17,8 +17,8 @@ class Authenticate extends Middleware
     {
         if (! $request->expectsJson()) {
             // return route('login');
-            // return response()->json(['sucsess'=>false, "message"=>'Not authenticated']);
-            abort(500, 'Not authenticated.');
+            // loginパスへリダイレクトする代わりに、エラーを返す（loginパスへリダイレクトはフロントのSPAで行う）
+            abort(401, 'Unauthorized action.');
         }
     }
 }
