@@ -85,7 +85,7 @@ return [
         // 追加
         'facebook_accounts' => [
             'driver' => 'eloquent',
-            'model' => App\FacebookAccount::class,
+            'model' => App\Models\FacebookAccount::class,
         ],
     ],
 

@@ -7,7 +7,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Laravel\Socialite\Facades\Socialite;
 use Illuminate\Support\Facades\Auth; //ログイン認証のために追加
-use App\FacebookAccount;  // ログイン認証のためにFacebookAccountモデルを読み込む
+use App\Models\FacebookAccount;  // ログイン認証のためにFacebookAccountモデルを読み込む
 
 class FacebookOAuthController extends Controller
 {

@@ -6,6 +6,7 @@ use Illuminate\Auth\Middleware\Authenticate as Middleware;
 
 class Authenticate extends Middleware
 {
+    // 認証が失敗した（ログイン済み出ない）場合
     /**
      * Get the path the user should be redirected to when they are not authenticated.
      *
@@ -15,7 +16,9 @@ class Authenticate extends Middleware
     protected function redirectTo($request)
     {
         if (! $request->expectsJson()) {
-            return route('login');
+            // return route('login');
+            // return response()->json(['sucsess'=>false, "message"=>'Not authenticated']);
+            abort(500, 'Not authenticated.');
         }
     }
 }
