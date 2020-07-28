@@ -37,9 +37,17 @@ class FacebookOAuthController extends Controller
             // $userがnullじゃない＝すでに登録済みなら、
             if($user){
                 //ログイン処理に移る。
-                if(Auth::guard('facebook')->attempt(['email' => $user->email])){
-                    return response()->json(['sucsess'=>true, "message"=>'Login succeeded']);
-                };
+                
+                // if(Auth::guard('facebook')->attempt(['email' => $user->email])){
+                //     return response()->json(['sucsess'=>true, "message"=>'Login succeeded']);
+                // };
+
+                /* $userがあるということは、
+                Facebookから受け取ったユーザー情報と一致するユーザー情報がすでにDBの指定のテーブルにあることを確認済みであるため、
+                DBに入力値と一致する情報があることをチェックする処理を含んだをAuth::guard('facebook')->attemptメソッドを呼び出す代わりに、
+                loginメソッドを直接呼び出す。*/
+                Auth::guard('facebook')->login($user);
+                return response()->json(['sucsess'=>true, "message"=>'Login succeeded']);
 
                 // OAuth Two Providers
                 // $token = $user->token;
@@ -68,9 +76,15 @@ class FacebookOAuthController extends Controller
             
             // 新規登録が上手くいったら、続けてログイン処理に進む。
             if($user){
-                if(Auth::guard('facebook')->attempt(['email' => $user->email])){
-                    return response()->json(['sucsess'=>true, "message"=>'Registration and Login succeeded']);
-                };
+                // if(Auth::guard('facebook')->attempt(['email' => $user->email])){
+                //     return response()->json(['sucsess'=>true, "message"=>'Registration and Login succeeded']);
+                // };
+
+                /* $userがあるということは、新規登録に成功したことを意味し、
+                DBにFacebookから受け取ったユーザー情報と一致する情報があることをチェックする処理を含んだをAuth::guard('facebook')->attemptメソッドを呼び出す代わりに、
+                loginメソッドを直接呼び出す。*/
+                Auth::guard('facebook')->login($user);
+                return response()->json(['sucsess'=>true, "message"=>'Registration and Login succeeded']);
             }
 
         }catch(Exception $e){
