@@ -24,36 +24,23 @@ class FacebookOAuthController extends Controller
         return Socialite::driver('facebook')->redirect();
     }
 
+
     public function handleProviderCallback()
     {
-        // dd("succsses");
         try{
-            // $user = Socialite::driver('facebook')->user();
+            // Socialiteの以下のメソッドで、facebookから送られてきたユーザー情報を取り出す。
             $socialUser = Socialite::driver('facebook')->user();
-            // dd($socialUser);
-
-            // すでに登録済みなら
-            // $user = FacebookAccount::firstOrNew([
-            //     'email' => $socialUser->getEmail()
-            // ]);
-
+    
             // すでに登録済みなら、FacebookAccountモデルを通して、facebook_accountsテーブルからユーザー認証情報を取得できる。
             $user = FacebookAccount::where('email',$socialUser->getEmail())->first();
-            // dd($user);
             
             // $userがnullじゃない＝すでに登録済みなら、
             if($user){
-                // dd($user->email);
-                $guard = Auth::guard('facebook');
-                // Auth::login($user);
-                // dd(['eamil' => $socialUser->getEmail(), 'id' => $socialUser->getId()]);
-                // Auth::guard('facebook')->attempt(['username' => $socialUser->getEmail(), 'password' =>$socialUser->getId()]);
-                dd(Auth::guard('facebook')->attempt(['email' => $socialUser->getEmail(), "facebook_id" => $socialUser->getId()]));
-                if(Auth::guard('facebook')->attempt(['eamil' => $socialUser->getEmail(), 'id' => $socialUser->getId()])){
-                    dd("success");
+                //ログイン処理に移る。
+                if(Auth::guard('facebook')->attempt(['email' => $user->email])){
+                    return response()->json(['sucsess'=>true, "message"=>'Login succeeded']);
                 };
 
-                // dd($guard);
                 // OAuth Two Providers
                 // $token = $user->token;
                 // $refreshToken = $user->refreshToken; // not always provided
@@ -66,29 +53,28 @@ class FacebookOAuthController extends Controller
                 // $user->getEmail();
                 // $user->getAvatar();
 
-            }else{
-                $userName = $socialUser->getName();
-                $userEmail = $socialUser->getEmail();
-                $userFacebookId = $socialUser->getId();
-    
-                $user = FacebookAccount::create([
-                    'name' => $userName,
-                    'email' => $userEmail,
-                    'facebook_id' => $userFacebookId
-                ]);
             }
-    
-    
-            // $user->save();
-            // dd($user->email);
-    
-            // Auth::guard('facebook')->attempt($user);
-            // ['name' => $socialU, 'password' =>$socialUser->getId()]
+
+            // 未登録なら、新規登録する。
+            $userName = $socialUser->getName();
+            $userEmail = $socialUser->getEmail();
+            $userFacebookId = $socialUser->getId();
+
+            $user = FacebookAccount::create([
+                'name' => $userName,
+                'email' => $userEmail,
+                'facebook_id' => $userFacebookId
+            ]);
+            
+            // 新規登録が上手くいったら、続けてログイン処理に進む。
+            if($user){
+                if(Auth::guard('facebook')->attempt(['email' => $user->email])){
+                    return response()->json(['sucsess'=>true, "message"=>'Registration and Login succeeded']);
+                };
+            }
 
         }catch(Exception $e){
-            dd("err");
+            return response()->json(['sucsess'=>false, "message"=>'Registration or Login failed']);
         }
-
-        // $user->token;
     }
 }
