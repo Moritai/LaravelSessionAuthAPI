@@ -43,7 +43,7 @@ class FacebookOAuthController extends Controller
                 // };
 
                 /* $userがあるということは、
-                Facebookから受け取ったユーザー情報と一致するユーザー情報がすでにDBの指定のテーブルにあることを確認済みであるため、
+                Facebookから受け取ったユーザー情報(のemail)と一致するユーザー情報(email)がすでにDBの指定のテーブルにあることを確認済みであるため、
                 DBに入力値と一致する情報があることをチェックする処理を含んだをAuth::guard('facebook')->attemptメソッドを呼び出す代わりに、
                 loginメソッドを直接呼び出す。*/
                 Auth::guard('facebook')->login($user);
@@ -81,7 +81,8 @@ class FacebookOAuthController extends Controller
                 // };
 
                 /* $userがあるということは、新規登録に成功したことを意味し、
-                DBにFacebookから受け取ったユーザー情報と一致する情報があることをチェックする処理を含んだをAuth::guard('facebook')->attemptメソッドを呼び出す代わりに、
+                DBにFacebookから受け取ったユーザー情報と一致する情報があることをチェックする処理を含んだをAuth::guard('facebook')->attemptメソッドを呼び出す必要はない。
+                代わりに、
                 loginメソッドを直接呼び出す。*/
                 Auth::guard('facebook')->login($user);
                 return response()->json(['sucsess'=>true, "message"=>'Registration and Login succeeded']);
@@ -91,4 +92,20 @@ class FacebookOAuthController extends Controller
             return response()->json(['sucsess'=>false, "message"=>'Registration or Login failed']);
         }
     }
+
+
+    // protected function setIsLoginCookie(boolean $isLogin)
+    // {
+    //     // すべての処理が終わってクライアントにリスポンスを返す際に、まとめてそのリスポンスに付与される*/
+    //     cookie()->queue(
+    //         'isLogin',//cookie名
+    //         $isLogin,//cookieの値
+    //         14400, // cookieの有効期限（分）：一日1440分だから、10 days（指定しない場合ブラウザが閉じるまでが有効期限となる）
+    //         null,//ドメイン名（nullの場合はこのサーバーのドメイン）
+    //         null,//パス(nullの場合は/)
+    //         false,//secure(httpsのときのみ、Cookieを送信する。httpsとなる本番環境ではtrue
+    //         true // httponly(httponlyを)
+    //     );　//※２
+    // }
+
 }
