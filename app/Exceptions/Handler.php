@@ -51,11 +51,11 @@ class Handler extends ExceptionHandler
     public function render($request, Throwable $exception)
     {
         // https://stackoverflow.com/questions/46589843/laravel-5-5-exception-instanceof-authenticationexception-not-working-as-expecte
-        if ($exception instanceof \Illuminate\Auth\AuthenticationException) {
-            //Do something
-            return response()->json(["Authentication failed"]);
-        }
-        return response()->json(["Error"]);
-        // return parent::render($request, $exception);
+        // if ($exception instanceof \Illuminate\Auth\AuthenticationException) {
+        //     //Do something
+        //     return response()->json(["Authentication failed"]);
+        // }
+        // return response()->json(["Error"]);
+        return parent::render($request, $exception);
     }
 }

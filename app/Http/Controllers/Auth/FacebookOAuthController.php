@@ -8,6 +8,10 @@ use Illuminate\Http\JsonResponse;
 use Laravel\Socialite\Facades\Socialite;
 use Illuminate\Support\Facades\Auth; //ログイン認証のために追加
 use App\Models\FacebookAccount;  // ログイン認証のためにFacebookAccountモデルを読み込む
+// 追加
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Date;
+use Symfony\Component\HttpFoundation\Cookie;
 
 class FacebookOAuthController extends Controller
 {
@@ -47,6 +51,7 @@ class FacebookOAuthController extends Controller
                 DBに入力値と一致する情報があることをチェックする処理を含んだをAuth::guard('facebook')->attemptメソッドを呼び出す代わりに、
                 loginメソッドを直接呼び出す。*/
                 Auth::guard('facebook')->login($user);
+                $this->setIsLoginCookie();
                 return response()->json(['sucsess'=>true, "message"=>'Login succeeded']);
 
                 // OAuth Two Providers
@@ -93,19 +98,29 @@ class FacebookOAuthController extends Controller
         }
     }
 
+    private function setIsLoginCookie()
+    {
+        // config/session.phpの設定を使用できるように \Config::get('session')で読み込む。
+        $config = \Config::get('session');
+        // 新たな有効期限の算出
+        $expirationDate = $config['expire_on_close'] ? 0 : Date::instance(
+            Carbon::now()->addRealMinutes($config['lifetime'])
+        );
 
-    // protected function setIsLoginCookie(boolean $isLogin)
-    // {
-    //     // すべての処理が終わってクライアントにリスポンスを返す際に、まとめてそのリスポンスに付与される*/
-    //     cookie()->queue(
-    //         'isLogin',//cookie名
-    //         $isLogin,//cookieの値
-    //         14400, // cookieの有効期限（分）：一日1440分だから、10 days（指定しない場合ブラウザが閉じるまでが有効期限となる）
-    //         null,//ドメイン名（nullの場合はこのサーバーのドメイン）
-    //         null,//パス(nullの場合は/)
-    //         false,//secure(httpsのときのみ、Cookieを送信する。httpsとなる本番環境ではtrue
-    //         true // httponly(httponlyを)
-    //     );　//※２
-    // }
-
+        /* すべての処理が終わってクライアントにリスポンスを返す際に、
+        キューイングされているcookiesがddQueuedCookiesToResponseミドルウェアによって、
+        まとめてそのリスポンスに付与される*/
+        cookie()->queue(
+            'login_flag',//cookie名
+            true,//cookieの値
+            \Config::get('session.lifetime'),
+            // $expirationDate,
+            $config['path'], 
+            $config['domain'], 
+            $config['secure'] ?? false,
+            $config['http_only'] ?? true, 
+            false, 
+            $config['same_site'] ?? null
+        );
+    }
 }
