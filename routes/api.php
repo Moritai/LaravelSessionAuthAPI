@@ -15,25 +15,39 @@ use Illuminate\Support\Facades\Route;
 */
 
 
-// Route::get('/guest', function () {
-//     return response()->json([
-//         'message' => 'Hello, guest'
-//     ]);
-// });
+Route::get('/guest', function () {
+    return response()->json([
+        'message' => 'Hello, guest'
+    ]);
+});
 
 // prefixはルートのパスに付与するもの（下の例だとauth/twitterがパスとなる）
 Route::prefix('auth')->middleware('guest')->group(function () {
     Route::get('/facebook', 'Auth\FacebookOAuthController@getRedirectUrl');
+    // .envに登録したFACEBOOK_CALLBACK_URL
+    Route::get('facebook/callback', 'Auth\FacebookOAuthController@handleProviderCallback');
 });
 
 
 // まとめて複数のルートにauthのミドルウェアを適用する場合
-Route::middleware('auth')->group(function () {
-    
+
+Route::group(['middleware' => ['auth:facebook']], function() {
+
     Route::get('/test', function () {
         return response()->json([
-            'user' => Auth::user()
+            'test' => "clear"
         ]);
     });
-    // Route::post('logout', 'AuthController@logout')->name('logout');
+
 });
+
+// Route::middleware(['auth:facebook','auth:web'])->group(function () {
+    
+//     Route::get('/test', function () {
+//         return response()->json([
+//             'test' => "clear"
+//         ]);
+//     });
+//     // Route::post('logout', 'AuthController@logout')->name('logout');
+// });
+

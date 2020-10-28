@@ -53,6 +53,8 @@ class Kernel extends HttpKernel
             \Illuminate\Session\Middleware\StartSession::class,
             \Illuminate\View\Middleware\ShareErrorsFromSession::class,
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
+            // 独自のcookieの有効期限を更新するために作成
+            \App\Http\Middleware\UpdateCookieExpirationDate::class,
         ],
     ];
 
